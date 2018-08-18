@@ -36,6 +36,11 @@ class AfterShipCard extends HTMLElement {
           tbody tr:nth-child(even) {
             background-color: var(--secondary-background-color);
           }
+          td a {
+            color: var(--primary-text-color);
+            text-decoration-line: none;
+            font-weight: normal;
+          }
         `;
     content.innerHTML = `
       <div id='AfterShip'>
@@ -79,7 +84,7 @@ class AfterShipCard extends HTMLElement {
                 <tr>
                   <td>${elem[1].title}</td>
                   <td>${elem[1].status}</td>
-                  <td>${elem[0]} (${elem[1].slug})</td>
+                  <td><a href="https://track.aftership.com/${elem[1].slug}/${elem[0]}" target='_blank'>${elem[0]} (${elem[1].slug})</a></td>
                 </tr>
             `).join('')}
           `;
