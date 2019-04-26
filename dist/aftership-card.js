@@ -2982,7 +2982,7 @@ let AftershipCard = class AftershipCard extends LitElement {
         const title = this._title;
         const tracking = this._tracking;
         if (tracking.value.length > 0) {
-            this.hass.callService("sensor", "aftership_add_tracking", {
+            this.hass.callService("aftership", "add_tracking", {
                 tracking_number: tracking.value,
                 title: title.value
             });
@@ -3000,7 +3000,7 @@ let AftershipCard = class AftershipCard extends LitElement {
     }
     _removeItem(ev) {
         const target = ev.target;
-        this.hass.callService("sensor", "aftership_remove_tracking", {
+        this.hass.callService("aftership", "remove_tracking", {
             tracking_number: target.tracking_number,
             slug: target.slug
         });

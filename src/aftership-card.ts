@@ -212,7 +212,7 @@ class AftershipCard extends LitElement {
     const tracking = this._tracking;
 
     if (tracking.value!.length > 0) {
-      this.hass!.callService("sensor", "aftership_add_tracking", {
+      this.hass!.callService("aftership", "add_tracking", {
         tracking_number: tracking.value,
         title: title.value
       });
@@ -234,7 +234,7 @@ class AftershipCard extends LitElement {
 
   private _removeItem(ev): void {
     const target = ev.target;
-    this.hass!.callService("sensor", "aftership_remove_tracking", {
+    this.hass!.callService("aftership", "remove_tracking", {
       tracking_number: target.tracking_number,
       slug: target.slug
     });
