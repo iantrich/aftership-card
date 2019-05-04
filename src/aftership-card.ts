@@ -12,6 +12,8 @@ import {
 import { AftershipCardConfig, HomeAssistant, Tracking } from "./types";
 import { repeat } from "lit-html/directives/repeat";
 import { fireEvent } from "./fire-event";
+import { longPress } from "./long-press";
+import { forwardHaptic } from "./haptic";
 
 @customElement("aftership-card")
 class AftershipCard extends LitElement {
@@ -94,9 +96,11 @@ class AftershipCard extends LitElement {
                   <ha-icon
                     icon="mdi:truck-delivery"
                     .index="${index}"
-                    .link="${item.link}"
+                    .item="${item}"
                     .title="Expected Delivery: ${new Date(item.expected_delivery).toDateString()}"
-                    @click="${this._openLink}"
+                    @ha-click="${this._openLink}"
+                    @ha-hold="${this._removeItem}"
+                    .longpress="${longPress()}"
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -130,8 +134,10 @@ class AftershipCard extends LitElement {
                   <ha-icon
                     icon="mdi:package"
                     .index="${index}"
-                    .link="${item.link}"
-                    @click="${this._openLink}"
+                    .item="${item}"
+                    @ha-click="${this._openLink}"
+                    @ha-hold="${this._removeItem}"
+                    .longpress="${longPress()}"
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -233,11 +239,15 @@ class AftershipCard extends LitElement {
   }
 
   private _removeItem(ev): void {
-    const target = ev.target;
+    const item = ev.target.item;
+    if (!window.confirm("Are you sure you want to remove this tracking?")) {
+      return;
+    }
     this.hass!.callService("aftership", "remove_tracking", {
-      tracking_number: target.tracking_number,
-      slug: target.slug
+      tracking_number: item.tracking_number,
+      slug: item.slug
     });
+    forwardHaptic(this, "success");
   }
 
   private _moreInfo(): void {
@@ -247,8 +257,8 @@ class AftershipCard extends LitElement {
   }
 
   private _openLink(ev): void {
-    const target = ev.target;
-    window.open(target.link, "mywindow");
+    const item = ev.target.item;
+    window.open(item.link, "mywindow");
   }
 
   static get styles(): CSSResult {
