@@ -2826,6 +2826,158 @@ const fireEvent = (node, type, detail, options) => {
     return event;
 };
 
+// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
+// on how to undo mwc -> paper migration
+// import "@material/mwc-ripple";
+const isTouch = "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+class LongPress extends HTMLElement {
+    constructor() {
+        super();
+        this.holdTime = 500;
+        this.ripple = document.createElement("paper-ripple");
+        this.timer = undefined;
+        this.held = false;
+        this.cooldownStart = false;
+        this.cooldownEnd = false;
+    }
+    connectedCallback() {
+        Object.assign(this.style, {
+            borderRadius: "50%",
+            position: "absolute",
+            width: isTouch ? "100px" : "50px",
+            height: isTouch ? "100px" : "50px",
+            transform: "translate(-50%, -50%)",
+            pointerEvents: "none",
+        });
+        this.appendChild(this.ripple);
+        this.ripple.style.color = "#03a9f4"; // paper-ripple
+        this.ripple.style.color = "var(--primary-color)"; // paper-ripple
+        // this.ripple.primary = true;
+        [
+            "touchcancel",
+            "mouseout",
+            "mouseup",
+            "touchmove",
+            "mousewheel",
+            "wheel",
+            "scroll",
+        ].forEach((ev) => {
+            document.addEventListener(ev, () => {
+                clearTimeout(this.timer);
+                this.stopAnimation();
+                this.timer = undefined;
+            }, { passive: true });
+        });
+    }
+    bind(element) {
+        if (element.longPress) {
+            return;
+        }
+        element.longPress = true;
+        element.addEventListener("contextmenu", (ev) => {
+            const e = ev || window.event;
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.cancelBubble = true;
+            e.returnValue = false;
+            return false;
+        });
+        const clickStart = (ev) => {
+            if (this.cooldownStart) {
+                return;
+            }
+            this.held = false;
+            let x;
+            let y;
+            if (ev.touches) {
+                x = ev.touches[0].pageX;
+                y = ev.touches[0].pageY;
+            }
+            else {
+                x = ev.pageX;
+                y = ev.pageY;
+            }
+            this.timer = window.setTimeout(() => {
+                this.startAnimation(x, y);
+                this.held = true;
+            }, this.holdTime);
+            this.cooldownStart = true;
+            window.setTimeout(() => (this.cooldownStart = false), 100);
+        };
+        const clickEnd = (ev) => {
+            if (this.cooldownEnd ||
+                (["touchend", "touchcancel"].includes(ev.type) &&
+                    this.timer === undefined)) {
+                return;
+            }
+            clearTimeout(this.timer);
+            this.stopAnimation();
+            this.timer = undefined;
+            if (this.held) {
+                element.dispatchEvent(new Event("ha-hold"));
+            }
+            else {
+                element.dispatchEvent(new Event("ha-click"));
+            }
+            this.cooldownEnd = true;
+            window.setTimeout(() => (this.cooldownEnd = false), 100);
+        };
+        element.addEventListener("touchstart", clickStart, { passive: true });
+        element.addEventListener("touchend", clickEnd);
+        element.addEventListener("touchcancel", clickEnd);
+        element.addEventListener("mousedown", clickStart, { passive: true });
+        element.addEventListener("click", clickEnd);
+    }
+    startAnimation(x, y) {
+        Object.assign(this.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+            display: null,
+        });
+        this.ripple.holdDown = true; // paper-ripple
+        this.ripple.simulatedRipple(); // paper-ripple
+        // this.ripple.disabled = false;
+        // this.ripple.active = true;
+        // this.ripple.unbounded = true;
+    }
+    stopAnimation() {
+        this.ripple.holdDown = false; // paper-ripple
+        // this.ripple.active = false;
+        // this.ripple.disabled = true;
+        this.style.display = "none";
+    }
+}
+customElements.define("long-press-button-aftership-card", LongPress);
+const getLongPress = () => {
+    const body = document.body;
+    if (body.querySelector("long-press-button-aftership-card")) {
+        return body.querySelector("long-press-button-aftership-card");
+    }
+    const longpress = document.createElement("long-press-button-aftership-card");
+    body.appendChild(longpress);
+    return longpress;
+};
+const longPressBind = (element) => {
+    const longpress = getLongPress();
+    if (!longpress) {
+        return;
+    }
+    longpress.bind(element);
+};
+const longPress = directive(() => (part) => {
+    longPressBind(part.committer.element);
+});
+
+const forwardHaptic = (el, hapticType) => {
+    fireEvent(el, "haptic", hapticType);
+};
+
 let AftershipCard = class AftershipCard extends LitElement {
     setConfig(config) {
         if (!config || !config.entity) {
@@ -2867,7 +3019,6 @@ let AftershipCard = class AftershipCard extends LitElement {
         const intransit = stateObj.attributes["trackings"].filter(function (tracking) {
             return tracking.status.toLowerCase() !== "delivered";
         });
-        // TODO Add remove tracking for each row in the details
         return html `
       <ha-card>
         <div class="header" @click="${this._moreInfo}">
@@ -2879,9 +3030,11 @@ let AftershipCard = class AftershipCard extends LitElement {
                   <ha-icon
                     icon="mdi:truck-delivery"
                     .index="${index}"
-                    .link="${item.link}"
+                    .item="${item}"
                     .title="Expected Delivery: ${new Date(item.expected_delivery).toDateString()}"
-                    @click="${this._openLink}"
+                    @ha-click="${this._openLink}"
+                    @ha-hold="${this._removeItem}"
+                    .longpress="${longPress()}"
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -2910,8 +3063,10 @@ let AftershipCard = class AftershipCard extends LitElement {
                   <ha-icon
                     icon="mdi:package"
                     .index="${index}"
-                    .link="${item.link}"
-                    @click="${this._openLink}"
+                    .item="${item}"
+                    @ha-click="${this._openLink}"
+                    @ha-hold="${this._removeItem}"
+                    .longpress="${longPress()}"
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -2999,11 +3154,15 @@ let AftershipCard = class AftershipCard extends LitElement {
         }
     }
     _removeItem(ev) {
-        const target = ev.target;
+        const item = ev.target.item;
+        if (!window.confirm("Are you sure you want to remove this tracking?")) {
+            return;
+        }
         this.hass.callService("aftership", "remove_tracking", {
-            tracking_number: target.tracking_number,
-            slug: target.slug
+            tracking_number: item.tracking_number,
+            slug: item.slug
         });
+        forwardHaptic(this, "success");
     }
     _moreInfo() {
         fireEvent(this, "hass-more-info", {
@@ -3011,8 +3170,8 @@ let AftershipCard = class AftershipCard extends LitElement {
         });
     }
     _openLink(ev) {
-        const target = ev.target;
-        window.open(target.link, "mywindow");
+        const item = ev.target.item;
+        window.open(item.link, "mywindow");
     }
     static get styles() {
         return css `
