@@ -111,7 +111,7 @@ class AftershipCard extends LitElement {
                 </paper-item-body>
                 <paper-item-body class="last">
                   <div>
-                    ${item.last_checkpoint.location
+                    ${item.last_checkpoint && item.last_checkpoint.location
                       ? this._toTitleCase(item.last_checkpoint.location)
                       : item.status}
                   </div>
