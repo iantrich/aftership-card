@@ -95,7 +95,9 @@ class AftershipCard extends LitElement {
                     icon="mdi:truck-delivery"
                     .index="${index}"
                     .item="${item}"
-                    .title="Expected Delivery: ${new Date(item.expected_delivery).toDateString()}"
+                    .title="Expected Delivery: ${new Date(
+                      item.expected_delivery
+                    ).toDateString()}"
                     @ha-click="${this._openLink}"
                     @ha-hold="${this._removeItem}"
                     .longpress="${longPress()}"
@@ -110,9 +112,9 @@ class AftershipCard extends LitElement {
                   </div>
                 </paper-item-body>
                 <paper-item-body class="last">
-                  <div>
+                  <div style="text-transform: capitalize">
                     ${item.last_checkpoint
-                      ? this._toTitleCase(item.last_checkpoint.location)
+                      ? item.last_checkpoint.location
                       : item.status}
                   </div>
                   <div class="secondary">
@@ -187,12 +189,6 @@ class AftershipCard extends LitElement {
         </paper-item>
       </ha-card>
     `;
-  }
-
-  private _toTitleCase(str: string): string {
-    return str.replace(/\w\S*/g, function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
   }
 
   private _daysUntilDelivery(expected: string): string {

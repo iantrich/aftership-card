@@ -3046,9 +3046,9 @@ let AftershipCard = class AftershipCard extends LitElement {
                   </div>
                 </paper-item-body>
                 <paper-item-body class="last">
-                  <div>
+                  <div style="text-transform: capitalize">
                     ${item.last_checkpoint
-            ? this._toTitleCase(item.last_checkpoint.location)
+            ? item.last_checkpoint.location
             : item.status}
                   </div>
                   <div class="secondary">
@@ -3117,11 +3117,6 @@ let AftershipCard = class AftershipCard extends LitElement {
         </paper-item>
       </ha-card>
     `;
-    }
-    _toTitleCase(str) {
-        return str.replace(/\w\S*/g, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
     }
     _daysUntilDelivery(expected) {
         const daysUntil = Math.floor((Date.parse(expected) - new Date().getMilliseconds()) / 86400000);
