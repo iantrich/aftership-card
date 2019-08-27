@@ -3031,7 +3031,9 @@ let AftershipCard = class AftershipCard extends LitElement {
                     icon="mdi:truck-delivery"
                     .index="${index}"
                     .item="${item}"
-                    .title="Expected Delivery: ${new Date(item.expected_delivery).toDateString()}"
+                    .title="Expected Delivery: ${item.expected_delivery
+            ? new Date(item.expected_delivery).toDateString()
+            : "Unknown"}"
                     @ha-click="${this._openLink}"
                     @ha-hold="${this._removeItem}"
                     .longpress="${longPress()}"
