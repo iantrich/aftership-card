@@ -113,7 +113,7 @@ class AftershipCard extends LitElement {
                 </paper-item-body>
                 <paper-item-body class="last">
                   <div style="text-transform: capitalize">
-                    ${item.last_checkpoint
+                    ${item.last_checkpoint && item.last_checkpoint.location
                       ? item.last_checkpoint.location
                       : item.status}
                   </div>
