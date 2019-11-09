@@ -1,0 +1,8 @@
+default_config:
+lovelace:
+  mode: yaml
+demo:
+sensor:
+  - platform: aftership
+    api_key: "c49c3d38-c6f9-465d-a114-d7907b7a4706"
+    # api_key: AFTERSHIP_APIKEY

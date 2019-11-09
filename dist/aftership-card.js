@@ -82,6 +82,7 @@ const directive = (f) => ((...args) => {
 const isDirective = (o) => {
     return typeof o === 'function' && directives.has(o);
 };
+//# sourceMappingURL=directive.js.map
 
 /**
  * @license
@@ -125,6 +126,7 @@ const removeNodes = (container, start, end = null) => {
         start = n;
     }
 };
+//# sourceMappingURL=dom.js.map
 
 /**
  * @license
@@ -148,6 +150,7 @@ const noChange = {};
  * A sentinel value that signals a NodePart to fully clear its content.
  */
 const nothing = {};
+//# sourceMappingURL=part.js.map
 
 /**
  * @license
@@ -361,6 +364,7 @@ const createMarker = () => document.createComment('');
  *    * (') then any non-(')
  */
 const lastAttributeNameRegex = /([ \x09\x0a\x0c\x0d])([^\0-\x1F\x7F-\x9F "'>=/]+)([ \x09\x0a\x0c\x0d]*=[ \x09\x0a\x0c\x0d]*(?:[^ \x09\x0a\x0c\x0d"'`<>=]*|"[^"]*|'[^']*))$/;
+//# sourceMappingURL=template.js.map
 
 /**
  * @license
@@ -493,6 +497,7 @@ class TemplateInstance {
         return fragment;
     }
 }
+//# sourceMappingURL=template-instance.js.map
 
 /**
  * @license
@@ -581,6 +586,7 @@ class TemplateResult {
         return template;
     }
 }
+//# sourceMappingURL=template-result.js.map
 
 /**
  * @license
@@ -1020,6 +1026,7 @@ const getOptions = (o) => o &&
     (eventOptionsSupported ?
         { capture: o.capture, passive: o.passive, once: o.once } :
         o.capture);
+//# sourceMappingURL=parts.js.map
 
 /**
  * @license
@@ -1071,6 +1078,7 @@ class DefaultTemplateProcessor {
     }
 }
 const defaultTemplateProcessor = new DefaultTemplateProcessor();
+//# sourceMappingURL=default-template-processor.js.map
 
 /**
  * @license
@@ -1118,6 +1126,7 @@ function templateFactory(result) {
     return template;
 }
 const templateCaches = new Map();
+//# sourceMappingURL=template-factory.js.map
 
 /**
  * @license
@@ -1158,6 +1167,7 @@ const render = (result, container, options) => {
     part.setValue(result);
     part.commit();
 };
+//# sourceMappingURL=render.js.map
 
 /**
  * @license
@@ -1181,6 +1191,7 @@ const render = (result, container, options) => {
  * render to and update a container.
  */
 const html = (strings, ...values) => new TemplateResult(strings, values, 'html', defaultTemplateProcessor);
+//# sourceMappingURL=lit-html.js.map
 
 /**
  * @license
@@ -1305,6 +1316,7 @@ function insertNodeIntoTemplate(template, node, refNode = null) {
         }
     }
 }
+//# sourceMappingURL=modify-template.js.map
 
 /**
  * @license
@@ -1574,6 +1586,7 @@ const render$1 = (result, container, options) => {
         window.ShadyCSS.styleElement(container.host);
     }
 };
+//# sourceMappingURL=shady-render.js.map
 
 /**
  * @license
@@ -2199,6 +2212,7 @@ _a = finalized;
  * Marks class as having finished creating properties.
  */
 UpdatingElement[_a] = true;
+//# sourceMappingURL=updating-element.js.map
 
 /**
  * @license
@@ -2298,6 +2312,7 @@ function property(options) {
         legacyProperty(options, protoOrDescriptor, name) :
         standardProperty(options, protoOrDescriptor);
 }
+//# sourceMappingURL=decorators.js.map
 
 /**
 @license
@@ -2361,6 +2376,7 @@ const css = (strings, ...values) => {
     const cssText = values.reduce((acc, v, idx) => acc + textFromCSSResult(v) + strings[idx + 1], strings[0]);
     return new CSSResult(cssText, constructionToken);
 };
+//# sourceMappingURL=css-tag.js.map
 
 /**
  * @license
@@ -2558,6 +2574,7 @@ LitElement['finalized'] = true;
  * @nocollapse
  */
 LitElement.render = render$1;
+//# sourceMappingURL=lit-element.js.map
 
 /**
  * @license
@@ -2972,31 +2989,343 @@ const repeat = directive((items, keyFnOrTemplate, template) => {
         keyListCache.set(containerPart, newKeys);
     };
 });
+//# sourceMappingURL=repeat.js.map
 
-const fireEvent = (node, type, detail, options) => {
-    options = options || {};
-    detail = detail === null || detail === undefined ? {} : detail;
-    const event = new Event(type, {
-        bubbles: options.bubbles === undefined ? true : options.bubbles,
-        cancelable: Boolean(options.cancelable),
-        composed: options.composed === undefined ? true : options.composed
-    });
-    event.detail = detail;
-    node.dispatchEvent(event);
-    return event;
+/**
+ * Parse or format dates
+ * @class fecha
+ */
+var fecha = {};
+var token = /d{1,4}|M{1,4}|YY(?:YY)?|S{1,3}|Do|ZZ|([HhMsDm])\1?|[aA]|"[^"]*"|'[^']*'/g;
+var twoDigits = '\\d\\d?';
+var threeDigits = '\\d{3}';
+var fourDigits = '\\d{4}';
+var word = '[^\\s]+';
+var literal = /\[([^]*?)\]/gm;
+var noop = function () {
 };
 
-// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
-// on how to undo mwc -> paper migration
-// import "@material/mwc-ripple";
-const isTouch = "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0 ||
-    navigator.msMaxTouchPoints > 0;
-class LongPress extends HTMLElement {
+function regexEscape(str) {
+  return str.replace( /[|\\{()[^$+*?.-]/g, '\\$&');
+}
+
+function shorten(arr, sLen) {
+  var newArr = [];
+  for (var i = 0, len = arr.length; i < len; i++) {
+    newArr.push(arr[i].substr(0, sLen));
+  }
+  return newArr;
+}
+
+function monthUpdate(arrName) {
+  return function (d, v, i18n) {
+    var index = i18n[arrName].indexOf(v.charAt(0).toUpperCase() + v.substr(1).toLowerCase());
+    if (~index) {
+      d.month = index;
+    }
+  };
+}
+
+function pad(val, len) {
+  val = String(val);
+  len = len || 2;
+  while (val.length < len) {
+    val = '0' + val;
+  }
+  return val;
+}
+
+var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var monthNamesShort = shorten(monthNames, 3);
+var dayNamesShort = shorten(dayNames, 3);
+fecha.i18n = {
+  dayNamesShort: dayNamesShort,
+  dayNames: dayNames,
+  monthNamesShort: monthNamesShort,
+  monthNames: monthNames,
+  amPm: ['am', 'pm'],
+  DoFn: function DoFn(D) {
+    return D + ['th', 'st', 'nd', 'rd'][D % 10 > 3 ? 0 : (D - D % 10 !== 10) * D % 10];
+  }
+};
+
+var formatFlags = {
+  D: function(dateObj) {
+    return dateObj.getDate();
+  },
+  DD: function(dateObj) {
+    return pad(dateObj.getDate());
+  },
+  Do: function(dateObj, i18n) {
+    return i18n.DoFn(dateObj.getDate());
+  },
+  d: function(dateObj) {
+    return dateObj.getDay();
+  },
+  dd: function(dateObj) {
+    return pad(dateObj.getDay());
+  },
+  ddd: function(dateObj, i18n) {
+    return i18n.dayNamesShort[dateObj.getDay()];
+  },
+  dddd: function(dateObj, i18n) {
+    return i18n.dayNames[dateObj.getDay()];
+  },
+  M: function(dateObj) {
+    return dateObj.getMonth() + 1;
+  },
+  MM: function(dateObj) {
+    return pad(dateObj.getMonth() + 1);
+  },
+  MMM: function(dateObj, i18n) {
+    return i18n.monthNamesShort[dateObj.getMonth()];
+  },
+  MMMM: function(dateObj, i18n) {
+    return i18n.monthNames[dateObj.getMonth()];
+  },
+  YY: function(dateObj) {
+    return pad(String(dateObj.getFullYear()), 4).substr(2);
+  },
+  YYYY: function(dateObj) {
+    return pad(dateObj.getFullYear(), 4);
+  },
+  h: function(dateObj) {
+    return dateObj.getHours() % 12 || 12;
+  },
+  hh: function(dateObj) {
+    return pad(dateObj.getHours() % 12 || 12);
+  },
+  H: function(dateObj) {
+    return dateObj.getHours();
+  },
+  HH: function(dateObj) {
+    return pad(dateObj.getHours());
+  },
+  m: function(dateObj) {
+    return dateObj.getMinutes();
+  },
+  mm: function(dateObj) {
+    return pad(dateObj.getMinutes());
+  },
+  s: function(dateObj) {
+    return dateObj.getSeconds();
+  },
+  ss: function(dateObj) {
+    return pad(dateObj.getSeconds());
+  },
+  S: function(dateObj) {
+    return Math.round(dateObj.getMilliseconds() / 100);
+  },
+  SS: function(dateObj) {
+    return pad(Math.round(dateObj.getMilliseconds() / 10), 2);
+  },
+  SSS: function(dateObj) {
+    return pad(dateObj.getMilliseconds(), 3);
+  },
+  a: function(dateObj, i18n) {
+    return dateObj.getHours() < 12 ? i18n.amPm[0] : i18n.amPm[1];
+  },
+  A: function(dateObj, i18n) {
+    return dateObj.getHours() < 12 ? i18n.amPm[0].toUpperCase() : i18n.amPm[1].toUpperCase();
+  },
+  ZZ: function(dateObj) {
+    var o = dateObj.getTimezoneOffset();
+    return (o > 0 ? '-' : '+') + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4);
+  }
+};
+
+var parseFlags = {
+  D: [twoDigits, function (d, v) {
+    d.day = v;
+  }],
+  Do: [twoDigits + word, function (d, v) {
+    d.day = parseInt(v, 10);
+  }],
+  M: [twoDigits, function (d, v) {
+    d.month = v - 1;
+  }],
+  YY: [twoDigits, function (d, v) {
+    var da = new Date(), cent = +('' + da.getFullYear()).substr(0, 2);
+    d.year = '' + (v > 68 ? cent - 1 : cent) + v;
+  }],
+  h: [twoDigits, function (d, v) {
+    d.hour = v;
+  }],
+  m: [twoDigits, function (d, v) {
+    d.minute = v;
+  }],
+  s: [twoDigits, function (d, v) {
+    d.second = v;
+  }],
+  YYYY: [fourDigits, function (d, v) {
+    d.year = v;
+  }],
+  S: ['\\d', function (d, v) {
+    d.millisecond = v * 100;
+  }],
+  SS: ['\\d{2}', function (d, v) {
+    d.millisecond = v * 10;
+  }],
+  SSS: [threeDigits, function (d, v) {
+    d.millisecond = v;
+  }],
+  d: [twoDigits, noop],
+  ddd: [word, noop],
+  MMM: [word, monthUpdate('monthNamesShort')],
+  MMMM: [word, monthUpdate('monthNames')],
+  a: [word, function (d, v, i18n) {
+    var val = v.toLowerCase();
+    if (val === i18n.amPm[0]) {
+      d.isPm = false;
+    } else if (val === i18n.amPm[1]) {
+      d.isPm = true;
+    }
+  }],
+  ZZ: ['[^\\s]*?[\\+\\-]\\d\\d:?\\d\\d|[^\\s]*?Z', function (d, v) {
+    var parts = (v + '').match(/([+-]|\d\d)/gi), minutes;
+
+    if (parts) {
+      minutes = +(parts[1] * 60) + parseInt(parts[2], 10);
+      d.timezoneOffset = parts[0] === '+' ? minutes : -minutes;
+    }
+  }]
+};
+parseFlags.dd = parseFlags.d;
+parseFlags.dddd = parseFlags.ddd;
+parseFlags.DD = parseFlags.D;
+parseFlags.mm = parseFlags.m;
+parseFlags.hh = parseFlags.H = parseFlags.HH = parseFlags.h;
+parseFlags.MM = parseFlags.M;
+parseFlags.ss = parseFlags.s;
+parseFlags.A = parseFlags.a;
+
+
+// Some common format strings
+fecha.masks = {
+  default: 'ddd MMM DD YYYY HH:mm:ss',
+  shortDate: 'M/D/YY',
+  mediumDate: 'MMM D, YYYY',
+  longDate: 'MMMM D, YYYY',
+  fullDate: 'dddd, MMMM D, YYYY',
+  shortTime: 'HH:mm',
+  mediumTime: 'HH:mm:ss',
+  longTime: 'HH:mm:ss.SSS'
+};
+
+/***
+ * Format a date
+ * @method format
+ * @param {Date|number} dateObj
+ * @param {string} mask Format of the date, i.e. 'mm-dd-yy' or 'shortDate'
+ */
+fecha.format = function (dateObj, mask, i18nSettings) {
+  var i18n = i18nSettings || fecha.i18n;
+
+  if (typeof dateObj === 'number') {
+    dateObj = new Date(dateObj);
+  }
+
+  if (Object.prototype.toString.call(dateObj) !== '[object Date]' || isNaN(dateObj.getTime())) {
+    throw new Error('Invalid Date in fecha.format');
+  }
+
+  mask = fecha.masks[mask] || mask || fecha.masks['default'];
+
+  var literals = [];
+
+  // Make literals inactive by replacing them with ??
+  mask = mask.replace(literal, function($0, $1) {
+    literals.push($1);
+    return '@@@';
+  });
+  // Apply formatting rules
+  mask = mask.replace(token, function ($0) {
+    return $0 in formatFlags ? formatFlags[$0](dateObj, i18n) : $0.slice(1, $0.length - 1);
+  });
+  // Inline literal values back into the formatted value
+  return mask.replace(/@@@/g, function() {
+    return literals.shift();
+  });
+};
+
+/**
+ * Parse a date string into an object, changes - into /
+ * @method parse
+ * @param {string} dateStr Date string
+ * @param {string} format Date parse format
+ * @returns {Date|boolean}
+ */
+fecha.parse = function (dateStr, format, i18nSettings) {
+  var i18n = i18nSettings || fecha.i18n;
+
+  if (typeof format !== 'string') {
+    throw new Error('Invalid format in fecha.parse');
+  }
+
+  format = fecha.masks[format] || format;
+
+  // Avoid regular expression denial of service, fail early for really long strings
+  // https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS
+  if (dateStr.length > 1000) {
+    return null;
+  }
+
+  var dateInfo = {};
+  var parseInfo = [];
+  var literals = [];
+  format = format.replace(literal, function($0, $1) {
+    literals.push($1);
+    return '@@@';
+  });
+  var newFormat = regexEscape(format).replace(token, function ($0) {
+    if (parseFlags[$0]) {
+      var info = parseFlags[$0];
+      parseInfo.push(info[1]);
+      return '(' + info[0] + ')';
+    }
+
+    return $0;
+  });
+  newFormat = newFormat.replace(/@@@/g, function() {
+    return literals.shift();
+  });
+  var matches = dateStr.match(new RegExp(newFormat, 'i'));
+  if (!matches) {
+    return null;
+  }
+
+  for (var i = 1; i < matches.length; i++) {
+    parseInfo[i - 1](dateInfo, matches[i], i18n);
+  }
+
+  var today = new Date();
+  if (dateInfo.isPm === true && dateInfo.hour != null && +dateInfo.hour !== 12) {
+    dateInfo.hour = +dateInfo.hour + 12;
+  } else if (dateInfo.isPm === false && +dateInfo.hour === 12) {
+    dateInfo.hour = 0;
+  }
+
+  var date;
+  if (dateInfo.timezoneOffset != null) {
+    dateInfo.minute = +(dateInfo.minute || 0) - +dateInfo.timezoneOffset;
+    date = new Date(Date.UTC(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+      dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0));
+  } else {
+    date = new Date(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+      dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0);
+  }
+  return date;
+};
+
+var a=function(){try{(new Date).toLocaleDateString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleDateString(t,{year:"numeric",month:"long",day:"numeric"})}:function(t){return fecha.format(t,"mediumDate")},n=function(){try{(new Date).toLocaleString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleString(t,{year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"haDateTime")},r=function(){try{(new Date).toLocaleTimeString("i");}catch(e){return "RangeError"===e.name}return !1}()?function(e,t){return e.toLocaleTimeString(t,{hour:"numeric",minute:"2-digit"})}:function(t){return fecha.format(t,"shortTime")};var A=function(e,t,a,n){n=n||{},a=null==a?{}:a;var r=new Event(t,{bubbles:void 0===n.bubbles||n.bubbles,cancelable:Boolean(n.cancelable),composed:void 0===n.composed||n.composed});return r.detail=a,e.dispatchEvent(r),r};var U=function(e){A(window,"haptic",e);};//# sourceMappingURL=index.m.js.map
+
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+class ActionHandler extends HTMLElement {
     constructor() {
         super();
         this.holdTime = 500;
-        this.ripple = document.createElement("paper-ripple");
+        this.ripple = document.createElement('mwc-ripple');
         this.timer = undefined;
         this.held = false;
         this.cooldownStart = false;
@@ -3004,26 +3333,15 @@ class LongPress extends HTMLElement {
     }
     connectedCallback() {
         Object.assign(this.style, {
-            borderRadius: "50%",
-            position: "absolute",
-            width: isTouch ? "100px" : "50px",
-            height: isTouch ? "100px" : "50px",
-            transform: "translate(-50%, -50%)",
-            pointerEvents: "none",
+            position: 'absolute',
+            width: isTouch ? '100px' : '50px',
+            height: isTouch ? '100px' : '50px',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
         });
         this.appendChild(this.ripple);
-        this.ripple.style.color = "#03a9f4"; // paper-ripple
-        this.ripple.style.color = "var(--primary-color)"; // paper-ripple
-        // this.ripple.primary = true;
-        [
-            "touchcancel",
-            "mouseout",
-            "mouseup",
-            "touchmove",
-            "mousewheel",
-            "wheel",
-            "scroll",
-        ].forEach((ev) => {
+        this.ripple.primary = true;
+        ['touchcancel', 'mouseout', 'mouseup', 'touchmove', 'mousewheel', 'wheel', 'scroll'].forEach(ev => {
             document.addEventListener(ev, () => {
                 clearTimeout(this.timer);
                 this.stopAnimation();
@@ -3031,12 +3349,12 @@ class LongPress extends HTMLElement {
             }, { passive: true });
         });
     }
-    bind(element) {
-        if (element.longPress) {
+    bind(element, options) {
+        if (element.actionHandler) {
             return;
         }
-        element.longPress = true;
-        element.addEventListener("contextmenu", (ev) => {
+        element.actionHandler = true;
+        element.addEventListener('contextmenu', (ev) => {
             const e = ev || window.event;
             if (e.preventDefault) {
                 e.preventDefault();
@@ -3046,7 +3364,7 @@ class LongPress extends HTMLElement {
             }
             e.cancelBubble = true;
             e.returnValue = false;
-            return false;
+            return;
         });
         const clickStart = (ev) => {
             if (this.cooldownStart) {
@@ -3063,36 +3381,60 @@ class LongPress extends HTMLElement {
                 x = ev.pageX;
                 y = ev.pageY;
             }
-            this.timer = window.setTimeout(() => {
-                this.startAnimation(x, y);
-                this.held = true;
-            }, this.holdTime);
+            if (options.hasHold) {
+                this.timer = window.setTimeout(() => {
+                    this.startAnimation(x, y);
+                    this.held = true;
+                }, this.holdTime);
+            }
             this.cooldownStart = true;
             window.setTimeout(() => (this.cooldownStart = false), 100);
         };
         const clickEnd = (ev) => {
-            if (this.cooldownEnd ||
-                (["touchend", "touchcancel"].includes(ev.type) &&
-                    this.timer === undefined)) {
+            if (this.cooldownEnd || (['touchend', 'touchcancel'].includes(ev.type) && this.timer === undefined)) {
                 return;
             }
             clearTimeout(this.timer);
             this.stopAnimation();
             this.timer = undefined;
             if (this.held) {
-                element.dispatchEvent(new Event("ha-hold"));
+                A(element, 'action', { action: 'hold' });
+            }
+            else if (options.hasDoubleTap) {
+                if (ev.detail === 1 || ev.type === 'keyup') {
+                    this.dblClickTimeout = window.setTimeout(() => {
+                        A(element, 'action', { action: 'tap' });
+                    }, 250);
+                }
+                else {
+                    clearTimeout(this.dblClickTimeout);
+                    A(element, 'action', { action: 'double_tap' });
+                }
             }
             else {
-                element.dispatchEvent(new Event("ha-click"));
+                A(element, 'action', { action: 'tap' });
             }
             this.cooldownEnd = true;
             window.setTimeout(() => (this.cooldownEnd = false), 100);
         };
-        element.addEventListener("touchstart", clickStart, { passive: true });
-        element.addEventListener("touchend", clickEnd);
-        element.addEventListener("touchcancel", clickEnd);
-        element.addEventListener("mousedown", clickStart, { passive: true });
-        element.addEventListener("click", clickEnd);
+        const handleEnter = (ev) => {
+            if (ev.keyCode === 13) {
+                return clickEnd(ev);
+            }
+        };
+        element.addEventListener('touchstart', clickStart, { passive: true });
+        element.addEventListener('touchend', clickEnd);
+        element.addEventListener('touchcancel', clickEnd);
+        element.addEventListener('keyup', handleEnter);
+        // iOS 13 sends a complete normal touchstart-touchend series of events followed by a mousedown-click series.
+        // That might be a bug, but until it's fixed, this should make action-handler work.
+        // If it's not a bug that is fixed, this might need updating with the next iOS version.
+        // Note that all events (both touch and mouse) must be listened for in order to work on computers with both mouse and touchscreen.
+        const isIOS13 = window.navigator.userAgent.match(/iPhone OS 13_/);
+        if (!isIOS13) {
+            element.addEventListener('mousedown', clickStart, { passive: true });
+            element.addEventListener('click', clickEnd);
+        }
     }
     startAnimation(x, y) {
         Object.assign(this.style, {
@@ -3100,62 +3442,60 @@ class LongPress extends HTMLElement {
             top: `${y}px`,
             display: null,
         });
-        this.ripple.holdDown = true; // paper-ripple
-        this.ripple.simulatedRipple(); // paper-ripple
-        // this.ripple.disabled = false;
-        // this.ripple.active = true;
-        // this.ripple.unbounded = true;
+        this.ripple.disabled = false;
+        this.ripple.active = true;
+        this.ripple.unbounded = true;
     }
     stopAnimation() {
-        this.ripple.holdDown = false; // paper-ripple
-        // this.ripple.active = false;
-        // this.ripple.disabled = true;
-        this.style.display = "none";
+        this.ripple.active = false;
+        this.ripple.disabled = true;
+        this.style.display = 'none';
     }
 }
-customElements.define("long-press-button-aftership-card", LongPress);
-const getLongPress = () => {
+customElements.define('action-handler-aftership', ActionHandler);
+const geActionHandler = () => {
     const body = document.body;
-    if (body.querySelector("long-press-button-aftership-card")) {
-        return body.querySelector("long-press-button-aftership-card");
+    if (body.querySelector('action-handler-aftership')) {
+        return body.querySelector('action-handler-aftership');
     }
-    const longpress = document.createElement("long-press-button-aftership-card");
-    body.appendChild(longpress);
-    return longpress;
+    const actionhandler = document.createElement('action-handler-aftership');
+    body.appendChild(actionhandler);
+    return actionhandler;
 };
-const longPressBind = (element) => {
-    const longpress = getLongPress();
-    if (!longpress) {
+const actionHandlerBind = (element, options) => {
+    const actionhandler = geActionHandler();
+    if (!actionhandler) {
         return;
     }
-    longpress.bind(element);
+    actionhandler.bind(element, options);
 };
-const longPress = directive(() => (part) => {
-    longPressBind(part.committer.element);
+const actionHandler = directive((options = {}) => (part) => {
+    actionHandlerBind(part.committer.element, options);
 });
 
-const forwardHaptic = (el, hapticType) => {
-    fireEvent(el, "haptic", hapticType);
-};
+const CARD_VERSION = '1.1.4';
 
+/* eslint no-console: 0 */
+console.info(`%c  AFTERSHIPO-CARD \n%c  Version ${CARD_VERSION}   `, 'color: orange; font-weight: bold; background: black', 'color: white; font-weight: bold; background: dimgray');
 let AftershipCard = class AftershipCard extends LitElement {
     setConfig(config) {
         if (!config || !config.entity) {
-            throw new Error("Invalid configuration");
+            throw new Error('Invalid configuration');
         }
-        this._config = Object.assign({ title: "Aftership" }, config);
+        this._config = Object.assign({ title: 'Aftership' }, config);
     }
     getCardSize() {
         return 6;
     }
     shouldUpdate(changedProps) {
-        if (changedProps.has("_config")) {
+        if (changedProps.has('_config')) {
             return true;
         }
-        const oldHass = changedProps.get("hass");
-        if (oldHass) {
-            return (oldHass.states[this._config.entity] !==
-                this.hass.states[this._config.entity]);
+        if (this.hass && this._config) {
+            const oldHass = changedProps.get('hass');
+            if (oldHass) {
+                return oldHass.states[this._config.entity] !== this.hass.states[this._config.entity];
+            }
         }
         return true;
     }
@@ -3173,15 +3513,15 @@ let AftershipCard = class AftershipCard extends LitElement {
         </ha-card>
       `;
         }
-        const delivered = stateObj.attributes["trackings"].filter(function (tracking) {
-            return tracking.status.toLowerCase() === "delivered";
+        const delivered = stateObj.attributes['trackings'].filter(function (tracking) {
+            return tracking.status.toLowerCase() === 'delivered';
         });
-        const intransit = stateObj.attributes["trackings"].filter(function (tracking) {
-            return tracking.status.toLowerCase() !== "delivered";
+        const intransit = stateObj.attributes['trackings'].filter(function (tracking) {
+            return tracking.status.toLowerCase() !== 'delivered';
         });
         return html `
       <ha-card>
-        <div class="header" @click="${this._moreInfo}">
+        <div class="header" @click=${this._moreInfo}>
           ${this._config.title}
         </div>
         ${repeat(intransit, item => item.tracking_number, (item, index) => html `
@@ -3189,14 +3529,13 @@ let AftershipCard = class AftershipCard extends LitElement {
                 <paper-item-body>
                   <ha-icon
                     icon="mdi:truck-delivery"
-                    .index="${index}"
-                    .item="${item}"
+                    .index=${index}
+                    .item=${item}
                     .title="Expected Delivery: ${item.expected_delivery
             ? new Date(item.expected_delivery).toDateString()
-            : "Unknown"}"
-                    @ha-click="${this._openLink}"
-                    @ha-hold="${this._removeItem}"
-                    .longpress="${longPress()}"
+            : 'Unknown'}"
+                    @action=${this._handleAction}
+                    .actionHandler=${actionHandler({})}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -3224,11 +3563,10 @@ let AftershipCard = class AftershipCard extends LitElement {
                 <paper-item-body>
                   <ha-icon
                     icon="mdi:package"
-                    .index="${index}"
-                    .item="${item}"
-                    @ha-click="${this._openLink}"
-                    @ha-hold="${this._removeItem}"
-                    .longpress="${longPress()}"
+                    .index=${index}
+                    .item=${item}
+                    @action=${this._handleAction}
+                    .actionHandler=${actionHandler({})}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -3251,27 +3589,16 @@ let AftershipCard = class AftershipCard extends LitElement {
             `)}
         <paper-item>
           <paper-item-body>
-            <ha-icon
-              class="addButton"
-              @click="${this._addItem}"
-              icon="hass:plus"
-              title="Add Tracking"
-            >
-            </ha-icon>
+            <ha-icon class="addButton" @click=${this._addItem} icon="hass:plus" title="Add Tracking"> </ha-icon>
           </paper-item-body>
           <paper-item-body>
-            <paper-input
-              no-label-float
-              placeholder="Title"
-              @keydown="${this._addKeyPress}"
-              id="title"
-            ></paper-input>
+            <paper-input no-label-float placeholder="Title" @keydown=${this._addKeyPress} id="title"></paper-input>
           </paper-item-body>
           <paper-item-body>
             <paper-input
               no-label-float
               placeholder="Tracking"
-              @keydown="${this._addKeyPress}"
+              @keydown=${this._addKeyPress}
               id="tracking"
               required
             ></paper-input>
@@ -3282,24 +3609,32 @@ let AftershipCard = class AftershipCard extends LitElement {
     }
     _daysUntilDelivery(expected) {
         const daysUntil = Math.floor((Date.parse(expected) - new Date().getMilliseconds()) / 86400000);
-        return daysUntil + daysUntil > 1 ? "days" : "day";
+        return daysUntil + daysUntil > 1 ? 'days' : 'day';
     }
     get _title() {
-        return this.shadowRoot.querySelector("#title");
+        if (this.shadowRoot) {
+            return this.shadowRoot.querySelector('#title');
+        }
+        return null;
     }
     get _tracking() {
-        return this.shadowRoot.querySelector("#tracking");
+        if (this.shadowRoot) {
+            return this.shadowRoot.querySelector('#tracking');
+        }
+        return null;
     }
     _addItem(ev) {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         const title = this._title;
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         const tracking = this._tracking;
-        if (tracking.value.length > 0) {
-            this.hass.callService("aftership", "add_tracking", {
+        if (this.hass && title && tracking && tracking.value && tracking.value.length > 0) {
+            this.hass.callService('aftership', 'add_tracking', {
                 tracking_number: tracking.value,
-                title: title.value
+                title: title.value,
             });
-            title.value = "";
-            tracking.value = "";
+            title.value = '';
+            tracking.value = '';
             if (ev) {
                 title.focus();
             }
@@ -3312,23 +3647,38 @@ let AftershipCard = class AftershipCard extends LitElement {
     }
     _removeItem(ev) {
         const item = ev.target.item;
-        if (!window.confirm("Are you sure you want to remove this tracking?")) {
+        if (!window.confirm('Are you sure you want to remove this tracking?')) {
             return;
         }
-        this.hass.callService("aftership", "remove_tracking", {
-            tracking_number: item.tracking_number,
-            slug: item.slug
-        });
-        forwardHaptic(this, "success");
+        if (this.hass) {
+            this.hass.callService('aftership', 'remove_tracking', {
+                tracking_number: item.tracking_number,
+                slug: item.slug,
+            });
+            U('success');
+        }
+        U('failure');
     }
     _moreInfo() {
-        fireEvent(this, "hass-more-info", {
-            entityId: this._config.entity
-        });
+        if (this._config) {
+            A(this, 'hass-more-info', {
+                entityId: this._config.entity,
+            });
+        }
+    }
+    _handleAction(ev) {
+        switch (ev.detail.action) {
+            case 'tap':
+                this._openLink(ev);
+                break;
+            case 'hold':
+                this._removeItem(ev);
+                break;
+        }
     }
     _openLink(ev) {
         const item = ev.target.item;
-        window.open(item.link, "mywindow");
+        window.open(item.link, 'mywindow');
     }
     static get styles() {
         return css `
@@ -3341,7 +3691,7 @@ let AftershipCard = class AftershipCard extends LitElement {
 
       .header {
         /* start paper-font-headline style */
-        font-family: "Roboto", "Noto", sans-serif;
+        font-family: 'Roboto', 'Noto', sans-serif;
         -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
         text-rendering: optimizeLegibility;
         font-size: 24px;
@@ -3429,5 +3779,7 @@ __decorate([
     property()
 ], AftershipCard.prototype, "_config", void 0);
 AftershipCard = __decorate([
-    customElement("aftership-card")
+    customElement('aftership-card')
 ], AftershipCard);
+
+export { AftershipCard };

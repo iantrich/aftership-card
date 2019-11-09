@@ -1,32 +1,29 @@
-import {
-  LitElement,
-  html,
-  customElement,
-  property,
-  TemplateResult,
-  css,
-  CSSResult,
-  PropertyValues
-} from "lit-element";
+import { LitElement, html, customElement, property, TemplateResult, css, CSSResult, PropertyValues } from 'lit-element';
+import { repeat } from 'lit-html/directives/repeat';
+import { HomeAssistant, forwardHaptic, fireEvent } from 'custom-card-helpers';
 
-import { AftershipCardConfig, HomeAssistant, Tracking } from "./types";
-import { repeat } from "lit-html/directives/repeat";
-import { fireEvent } from "./fire-event";
-import { longPress } from "./long-press";
-import { forwardHaptic } from "./haptic";
+import { AftershipCardConfig, Tracking } from './types';
+import { actionHandler } from './action-handler-directive';
+import { CARD_VERSION } from './const';
 
-@customElement("aftership-card")
-class AftershipCard extends LitElement {
+/* eslint no-console: 0 */
+console.info(
+  `%c  AFTERSHIPO-CARD \n%c  Version ${CARD_VERSION}   `,
+  'color: orange; font-weight: bold; background: black',
+  'color: white; font-weight: bold; background: dimgray',
+);
+
+@customElement('aftership-card')
+export class AftershipCard extends LitElement {
   @property() public hass?: HomeAssistant;
-
   @property() private _config?: AftershipCardConfig;
 
   public setConfig(config: AftershipCardConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid configuration");
+      throw new Error('Invalid configuration');
     }
 
-    this._config = { title: "Aftership", ...config };
+    this._config = { title: 'Aftership', ...config };
   }
 
   public getCardSize(): number {
@@ -34,17 +31,16 @@ class AftershipCard extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
+    if (changedProps.has('_config')) {
       return true;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (this.hass && this._config) {
+      const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
 
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+      if (oldHass) {
+        return oldHass.states[this._config.entity] !== this.hass.states[this._config.entity];
+      }
     }
 
     return true;
@@ -67,21 +63,17 @@ class AftershipCard extends LitElement {
       `;
     }
 
-    const delivered: Tracking[] = stateObj.attributes["trackings"].filter(
-      function(tracking) {
-        return tracking.status.toLowerCase() === "delivered";
-      }
-    );
+    const delivered: Tracking[] = stateObj.attributes['trackings'].filter(function(tracking) {
+      return tracking.status.toLowerCase() === 'delivered';
+    });
 
-    const intransit: Tracking[] = stateObj.attributes["trackings"].filter(
-      function(tracking) {
-        return tracking.status.toLowerCase() !== "delivered";
-      }
-    );
+    const intransit: Tracking[] = stateObj.attributes['trackings'].filter(function(tracking) {
+      return tracking.status.toLowerCase() !== 'delivered';
+    });
 
     return html`
       <ha-card>
-        <div class="header" @click="${this._moreInfo}">
+        <div class="header" @click=${this._moreInfo}>
           ${this._config.title}
         </div>
         ${repeat(
@@ -93,14 +85,13 @@ class AftershipCard extends LitElement {
                 <paper-item-body>
                   <ha-icon
                     icon="mdi:truck-delivery"
-                    .index="${index}"
-                    .item="${item}"
+                    .index=${index}
+                    .item=${item}
                     .title="Expected Delivery: ${item.expected_delivery
                       ? new Date(item.expected_delivery).toDateString()
-                      : "Unknown"}"
-                    @ha-click="${this._openLink}"
-                    @ha-hold="${this._removeItem}"
-                    .longpress="${longPress()}"
+                      : 'Unknown'}"
+                    @action=${this._handleAction}
+                    .actionHandler=${actionHandler({})}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -122,7 +113,7 @@ class AftershipCard extends LitElement {
                   </div>
                 </paper-item-body>
               </paper-item>
-            `
+            `,
         )}
         ${repeat(
           delivered,
@@ -133,11 +124,10 @@ class AftershipCard extends LitElement {
                 <paper-item-body>
                   <ha-icon
                     icon="mdi:package"
-                    .index="${index}"
-                    .item="${item}"
-                    @ha-click="${this._openLink}"
-                    @ha-hold="${this._removeItem}"
-                    .longpress="${longPress()}"
+                    .index=${index}
+                    .item=${item}
+                    @action=${this._handleAction}
+                    .actionHandler=${actionHandler({})}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -157,31 +147,20 @@ class AftershipCard extends LitElement {
                   </div>
                 </paper-item-body>
               </paper-item>
-            `
+            `,
         )}
         <paper-item>
           <paper-item-body>
-            <ha-icon
-              class="addButton"
-              @click="${this._addItem}"
-              icon="hass:plus"
-              title="Add Tracking"
-            >
-            </ha-icon>
+            <ha-icon class="addButton" @click=${this._addItem} icon="hass:plus" title="Add Tracking"> </ha-icon>
           </paper-item-body>
           <paper-item-body>
-            <paper-input
-              no-label-float
-              placeholder="Title"
-              @keydown="${this._addKeyPress}"
-              id="title"
-            ></paper-input>
+            <paper-input no-label-float placeholder="Title" @keydown=${this._addKeyPress} id="title"></paper-input>
           </paper-item-body>
           <paper-item-body>
             <paper-input
               no-label-float
               placeholder="Tracking"
-              @keydown="${this._addKeyPress}"
+              @keydown=${this._addKeyPress}
               id="tracking"
               required
             ></paper-input>
@@ -192,33 +171,41 @@ class AftershipCard extends LitElement {
   }
 
   private _daysUntilDelivery(expected: string): string {
-    const daysUntil = Math.floor(
-      (Date.parse(expected) - new Date().getMilliseconds()) / 86400000
-    );
+    const daysUntil = Math.floor((Date.parse(expected) - new Date().getMilliseconds()) / 86400000);
 
-    return daysUntil + daysUntil > 1 ? "days" : "day";
+    return daysUntil + daysUntil > 1 ? 'days' : 'day';
   }
 
-  private get _title() {
-    return this.shadowRoot!.querySelector("#title") as any;
+  private get _title(): HTMLElement | null {
+    if (this.shadowRoot) {
+      return this.shadowRoot.querySelector('#title');
+    }
+
+    return null;
   }
 
-  private get _tracking() {
-    return this.shadowRoot!.querySelector("#tracking") as any;
+  private get _tracking(): HTMLElement | null {
+    if (this.shadowRoot) {
+      return this.shadowRoot.querySelector('#tracking');
+    }
+
+    return null;
   }
 
   private _addItem(ev): void {
-    const title = this._title;
-    const tracking = this._tracking;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const title = this._title as any;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const tracking = this._tracking as any;
 
-    if (tracking.value!.length > 0) {
-      this.hass!.callService("aftership", "add_tracking", {
+    if (this.hass && title && tracking && tracking.value && tracking.value.length > 0) {
+      this.hass.callService('aftership', 'add_tracking', {
         tracking_number: tracking.value,
-        title: title.value
+        title: title.value,
       });
 
-      title.value = "";
-      tracking.value = "";
+      title.value = '';
+      tracking.value = '';
 
       if (ev) {
         title.focus();
@@ -234,25 +221,45 @@ class AftershipCard extends LitElement {
 
   private _removeItem(ev): void {
     const item = ev.target.item;
-    if (!window.confirm("Are you sure you want to remove this tracking?")) {
+    if (!window.confirm('Are you sure you want to remove this tracking?')) {
       return;
     }
-    this.hass!.callService("aftership", "remove_tracking", {
-      tracking_number: item.tracking_number,
-      slug: item.slug
-    });
-    forwardHaptic(this, "success");
+
+    if (this.hass) {
+      this.hass.callService('aftership', 'remove_tracking', {
+        tracking_number: item.tracking_number,
+        slug: item.slug,
+      });
+      forwardHaptic('success');
+    }
+
+    forwardHaptic('failure');
   }
 
   private _moreInfo(): void {
-    fireEvent(this, "hass-more-info", {
-      entityId: this._config!.entity
-    });
+    if (this._config) {
+      fireEvent(this, 'hass-more-info', {
+        entityId: this._config.entity,
+      });
+    }
+  }
+
+  private _handleAction(ev): void {
+    switch (ev.detail.action) {
+      case 'tap':
+        this._openLink(ev);
+        break;
+      case 'hold':
+        this._removeItem(ev);
+        break;
+      default:
+        break;
+    }
   }
 
   private _openLink(ev): void {
     const item = ev.target.item;
-    window.open(item.link, "mywindow");
+    window.open(item.link, 'mywindow');
   }
 
   static get styles(): CSSResult {
@@ -266,7 +273,7 @@ class AftershipCard extends LitElement {
 
       .header {
         /* start paper-font-headline style */
-        font-family: "Roboto", "Noto", sans-serif;
+        font-family: 'Roboto', 'Noto', sans-serif;
         -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
         text-rendering: optimizeLegibility;
         font-size: 24px;
