@@ -8,7 +8,7 @@ import { CARD_VERSION } from './const';
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  AFTERSHIPO-CARD \n%c  Version ${CARD_VERSION}   `,
+  `%c  AFTERSHIP-CARD  \n%c  Version ${CARD_VERSION}   `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
