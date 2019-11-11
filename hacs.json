@@ -1,6 +1,5 @@
 {
     "name": "Aftership Card",
     "render_readme": true,
-    "filename": "aftership-card.js",
-    "zip_release": true
+    "filename": "aftership-card.js"
 }
