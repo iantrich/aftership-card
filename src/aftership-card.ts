@@ -91,7 +91,7 @@ export class AftershipCard extends LitElement {
                       ? new Date(item.expected_delivery).toDateString()
                       : 'Unknown'}"
                     @action=${this._handleAction}
-                    .actionHandler=${actionHandler({})}
+                    .actionHandler=${actionHandler({ hasHold: true })}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -127,7 +127,7 @@ export class AftershipCard extends LitElement {
                     .index=${index}
                     .item=${item}
                     @action=${this._handleAction}
-                    .actionHandler=${actionHandler({})}
+                    .actionHandler=${actionHandler({ hasHold: true })}
                   ></ha-icon>
                 </paper-item-body>
                 <paper-item-body>

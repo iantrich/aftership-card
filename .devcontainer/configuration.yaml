@@ -4,4 +4,4 @@ lovelace:
 demo:
 sensor:
   - platform: aftership
-    api_key: AFTERSHIP_APIKEY
+    api_key: ef9b22bc-27cf-48d8-994c-332acca7abdb
