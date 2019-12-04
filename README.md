@@ -37,11 +37,12 @@ resources:
 
 ## Options
 
-| Name   | Type   | Requirement  | Description                                                                           |
-| ------ | ------ | ------------ | ------------------------------------------------------------------------------------- |
-| type   | string | **Required** | `custom:aftership-card`                                                               |
-| entity | string | **Required** | [Aftership](https://www.home-assistant.io/components/sensor.aftership/) sensor entity |
-| title  | string | **Optional** | Card title `Aftership`                                                                |
+| Name     | Type   | Requirement  | Description                                                                           |
+| -------- | ------ | ------------ | ------------------------------------------------------------------------------------- |
+| type     | string | **Required** | `custom:aftership-card`                                                               |
+| entity   | string | **Required** | [Aftership](https://www.home-assistant.io/components/sensor.aftership/) sensor entity |
+| title    | string | **Optional** | Card title `Aftership`                                                                |
+| show_add | bool   | **Optional** | Show fields to add a new package to track                                             |
 
 ## Usage
 

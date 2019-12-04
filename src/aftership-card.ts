@@ -149,23 +149,38 @@ export class AftershipCard extends LitElement {
               </paper-item>
             `,
         )}
-        <paper-item>
-          <paper-item-body>
-            <ha-icon class="addButton" @click=${this._addItem} icon="hass:plus" title="Add Tracking"> </ha-icon>
-          </paper-item-body>
-          <paper-item-body>
-            <paper-input no-label-float placeholder="Title" @keydown=${this._addKeyPress} id="title"></paper-input>
-          </paper-item-body>
-          <paper-item-body>
-            <paper-input
-              no-label-float
-              placeholder="Tracking"
-              @keydown=${this._addKeyPress}
-              id="tracking"
-              required
-            ></paper-input>
-          </paper-item-body>
-        </paper-item>
+        ${this._config.show_add === false
+          ? delivered.length === 0 && intransit.length === 0
+            ? html`
+                <paper-item>
+                  Not tracking any packages right now
+                </paper-item>
+              `
+            : null
+          : html`
+              <paper-item>
+                <paper-item-body>
+                  <ha-icon class="addButton" @click=${this._addItem} icon="hass:plus" title="Add Tracking"> </ha-icon>
+                </paper-item-body>
+                <paper-item-body>
+                  <paper-input
+                    no-label-float
+                    placeholder="Title"
+                    @keydown=${this._addKeyPress}
+                    id="title"
+                  ></paper-input>
+                </paper-item-body>
+                <paper-item-body>
+                  <paper-input
+                    no-label-float
+                    placeholder="Tracking"
+                    @keydown=${this._addKeyPress}
+                    id="tracking"
+                    required
+                  ></paper-input>
+                </paper-item-body>
+              </paper-item>
+            `}
       </ha-card>
     `;
   }
