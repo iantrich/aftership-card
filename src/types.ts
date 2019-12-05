@@ -2,6 +2,7 @@ export interface AftershipCardConfig {
   type: string;
   entity: string;
   title?: string;
+  show_add?: boolean;
 }
 
 export interface Tracking {
