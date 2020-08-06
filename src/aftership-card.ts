@@ -82,7 +82,7 @@ export class AftershipCard extends LitElement {
           (item, index) =>
             html`
               <paper-item>
-                <paper-item-body>
+                <paper-item-body class="icon">
                   <ha-icon
                     icon="mdi:truck-delivery"
                     .index=${index}
@@ -121,7 +121,7 @@ export class AftershipCard extends LitElement {
           (item, index) =>
             html`
               <paper-item>
-                <paper-item-body>
+                <paper-item-body class="icon">
                   <ha-icon
                     icon="mdi:package"
                     .index=${index}
@@ -159,7 +159,7 @@ export class AftershipCard extends LitElement {
             : null
           : html`
               <paper-item>
-                <paper-item-body>
+                <paper-item-body class="icon">
                   <ha-icon class="addButton" @click=${this._addItem} icon="hass:plus" title="Add Tracking"> </ha-icon>
                 </paper-item-body>
                 <paper-item-body>
@@ -279,6 +279,10 @@ export class AftershipCard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        padding: 16px;
+      }
+
       .warning {
         display: block;
         color: black;
@@ -297,7 +301,6 @@ export class AftershipCard extends LitElement {
         /* end paper-font-headline style */
 
         line-height: 40px;
-        padding: 8px 16px;
         cursor: pointer;
       }
 
@@ -330,10 +333,32 @@ export class AftershipCard extends LitElement {
         padding-right: 4px;
       }
 
+      paper-item {
+        padding: 0;
+      }
+
       paper-item-body {
         padding-right: 16px;
         margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: normal;
+        flex: auto;
+        flex-basis: auto;
         white-space: nowrap;
+        overflow: hidden;
+      }
+
+      paper-item-body > * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      paper-item-body.icon {
+        flex-direction: row;
+        max-width: 54px;
+        min-width: 54px;
       }
 
       table {
@@ -342,6 +367,7 @@ export class AftershipCard extends LitElement {
 
       .last {
         text-align: right;
+        min-width: 80px;
       }
 
       .secondary {
@@ -350,7 +376,6 @@ export class AftershipCard extends LitElement {
         margin-top: -10px;
         font-size: 10px;
         white-space: nowrap;
-        width: 70%;
       }
 
       table {
