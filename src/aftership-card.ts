@@ -99,7 +99,8 @@ export class AftershipCard extends LitElement {
                     ${item.name}
                   </div>
                   <div class="secondary">
-                    ${item.tracking_number} (${item.slug})
+                    ${item.last_checkpoint && item.last_checkpoint.message ? item.last_checkpoint.message : ''}
+                    (${item.status})
                   </div>
                 </paper-item-body>
                 <paper-item-body class="last">
