@@ -99,7 +99,8 @@ export class AftershipCard extends LitElement {
                     ${item.name}
                   </div>
                   <div class="secondary">
-                    ${item.tracking_number} (${item.slug})
+                    ${item.last_checkpoint && item.last_checkpoint.message ? item.last_checkpoint.message : ''}
+                    (${item.status})
                   </div>
                 </paper-item-body>
                 <paper-item-body class="last">
@@ -179,6 +180,15 @@ export class AftershipCard extends LitElement {
                     required
                   ></paper-input>
                 </paper-item-body>
+                <paper-item-body>
+                  <paper-input
+                    no-label-float
+                    placeholder="Slug"
+                    @keydown=${this._addKeyPress}
+                    id="slug"
+                    required
+                  ></paper-input>
+                </paper-item-body>
               </paper-item>
             `}
       </ha-card>
@@ -206,21 +216,32 @@ export class AftershipCard extends LitElement {
 
     return null;
   }
+  private get _slug(): HTMLElement | null {
+    if (this.shadowRoot) {
+      return this.shadowRoot.querySelector('#slug');
+    }
+
+    return null;
+  }
 
   private _addItem(ev): void {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const title = this._title as any;
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const tracking = this._tracking as any;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const slug = this._slug as any;
 
     if (this.hass && title && tracking && tracking.value && tracking.value.length > 0) {
       this.hass.callService('aftership', 'add_tracking', {
         tracking_number: tracking.value,
         title: title.value,
+        slug: slug.value,
       });
 
       title.value = '';
       tracking.value = '';
+      slug.value = '';
 
       if (ev) {
         title.focus();
